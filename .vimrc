@@ -96,6 +96,8 @@ vnoremap = =gv
 " <Ctrl-l> redraws the screen and removes any search highlighting.
 nnoremap <silent> <C-l> :nohl<CR><C-l>
 
+set backspace=indent,eol,start
+
 " Plugins
 
 " List of plugins
