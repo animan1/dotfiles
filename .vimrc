@@ -134,9 +134,9 @@ let g:airline#extensions#tabline#enabled = 1
 
 " ==== CTRL-P ====
 let g:ctrlp_working_path_mode = ''
-let g:ctrlp_show_hidden = 1
+let g:ctrlp_show_hidden = 0
 let g:ctrlp_max_files = 30000
-let g:ctrlp_custom_ignore = '\v\.(node_modules|DS_Store|git|virtualenvs?|pip_download_cache)$'
+let g:ctrlp_custom_ignore = '\v(node_modules|\.DS_Store|\.git|\.virtualenvs?|\.pip_download_cache|glove_content|build|dist)$'
 
 " If we have The Silver Searcher
 if executable('ag')
