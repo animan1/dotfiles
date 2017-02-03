@@ -1,0 +1,9 @@
+# Attach the TMUX
+if ! { [ "$TERM" = "screen" ] && [ -n "$TMUX" ]; } then
+  tmux has-session -t default
+  if [ $? == 0 ]; then
+    tmux attach -t default
+  else
+    tmux new -s default
+  fi
+fi
