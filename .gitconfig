@@ -1,6 +1,6 @@
 [user]
-        name = Daniel Boeve
-        email = dboeve@hearsaycorp.com
+    name = Daniel Boeve
+    email = dboeve@hearsaycorp.com
 [alias]
     up-mast = "!git fetch upstream && git checkout upstream/master"
     newb = "!git up-mast && git checkout -b $1 && git push --set-upstream origin"
@@ -8,8 +8,12 @@
     catchup = "!_(){ CURRENTBRANCH=$(git symbolic-ref HEAD 2>/dev/null | cut -d"/" -f 3); git fetch origin; echo \"Currently on \"$CURRENTBRANCH\" - switching to \"$@; git checkout $@; git merge origin/$@; echo \"Going back to \"$CURRENTBRANCH; git checkout $CURRENTBRANCH; }; _"
     cleanup = "!git stash-cb && git checkout master && git pull upstream master && git push && git branch --merged | grep -v "\\*" | xargs -n 1 git branch -d && git checkout $CURRENTBRANCH && git remote prune origin"
     g = "grep -n"
+    cpb = "!git checkout -b $1 && git push --set-upstream origin"
+    wip = "commit -an -m WIP"
+    fp = "push origin HEAD -f"
 [core]
         editor = vim
+        excludesfile = ~/.gitignore
 [color]
         ui = true
 [push]
