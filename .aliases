@@ -1,0 +1,2 @@
+alias cloud-dev='ssh dboeve.dev.hearsaylabs.com'
+alias prod-ops='ssh ops.prod.pnw.hearsaylabs.com'
