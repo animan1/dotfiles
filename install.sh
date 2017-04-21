@@ -4,3 +4,4 @@ ln -s `pwd`/.vimrc ~/.vimrc
 vim +PlugInstall
 ln -s `pwd`/.gitconfig ~/.gitconfig
 ln -s `pwd`/.aliases ~/.aliases
+ln -s `pwd`/.ssh/* ~/.ssh/
