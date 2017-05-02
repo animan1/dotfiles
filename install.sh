@@ -7,12 +7,15 @@ vim +PlugInstall
 # git
 ln -s `pwd`/.gitconfig ~/.gitconfig
 
+# SSH
+ln -s `pwd`/.ssh/* ~/.ssh/
+
+# TMUX
+ln -s `pwd`/.tmux.conf ~/.tmux.conf
+
 # shell
 chsh /bin/zsh
 ln -s `pwd`/.aliases ~/.aliases
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
 rm ~/.zshrc
 ln -s `pwd`/.zshrc ~/.zshrc
-
-# SSH
-ln -s `pwd`/.ssh/* ~/.ssh/
