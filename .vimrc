@@ -116,6 +116,7 @@ Plug 'vim-scripts/scratch.vim'
 Plug 'kien/rainbow_parentheses.vim'
 Plug 'tpope/vim-fugitive'
 Plug 'vim-scripts/BufOnly.vim'
+Plug 'mindriot101/vim-yapf'
 call plug#end()
 
 " ==== Configuration for plugins ====
@@ -163,3 +164,6 @@ let NERDTreeShowHidden=1
 let g:yankring_paste_v_key = '<leader>v'
 let g:yankring_replace_n_pkey = '<leader>['
 let g:yankring_replace_n_nkey = '<leader>]'
+
+" ==== YAPF ====
+nnoremap <leader>f :call Yapf()<cr>
