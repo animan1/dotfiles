@@ -1,4 +1,7 @@
 # vim
+sudo add-apt-repository -y ppa:pi-rho/dev
+sudo apt-get update
+sudo apt-get install -y vim-gtk
 sudo pip install yapf
 curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
     https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
