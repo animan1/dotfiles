@@ -1,6 +1,6 @@
 [user]
     name = Daniel Boeve
-    email = dboeve@hearsaycorp.com
+    email = djboeve@gmail.com
 [alias]
     up-mast = "!git fetch upstream && git checkout upstream/master"
     newb = "!git up-mast && git checkout -b $1 && git push --set-upstream origin"
