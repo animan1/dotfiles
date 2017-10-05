@@ -1,6 +1,4 @@
-alias test-fanmgmt="cd ~/projects/HearsayLabs/fanmgmt; ./run.sh manage.py test --settings=fanmgmt.settings.dboeve"
 alias c!="clear; fc -s"
 alias tmux-own="tmux detach-client -a"
 alias clip="nc localhost 8377"
-alias cloud-dev='ssh dboeve.dev.hearsaylabs.com'
-alias prod-ops='ssh ops.prod.pnw.hearsaylabs.com'
+alias cloud-dev='mosh djboeve.sb.facebook.com'
