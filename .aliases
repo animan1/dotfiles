@@ -1,4 +1,4 @@
-alias c!="clear; fc -s"
+alias c!="clear; fc -e :"
 alias tmux-own="tmux detach-client -a"
 alias clip="nc localhost 8377"
 alias cloud-dev='mosh djboeve.sb.facebook.com'
