@@ -2,7 +2,51 @@
 set -eu
 
 repo=$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd -P)
-dotfiles='.aliases .gitconfig .tmux.conf .vimrc .zshrc'
+dotfiles='.aliases .tmux.conf .vimrc .zshrc'
+git_config="$HOME/.gitconfig"
+shared_git_config="$repo/.gitconfig"
+
+check_git_config() {
+    if [ -L "$git_config" ]; then
+        [ "$(readlink "$git_config")" = "$shared_git_config" ] && return 0
+    elif [ ! -e "$git_config" ] || [ -f "$git_config" ]; then
+        return 0
+    fi
+    printf 'Move %s aside and rerun make setup.\n' "$git_config" >&2
+    return 1
+}
+
+setup_git_config() (
+    umask 077
+    # Use the same lock as Git so setup cannot race a global config update.
+    lock="$git_config.lock"
+    if ! (set -C; : > "$lock") 2>/dev/null; then
+        printf 'Could not lock %s. Check for another Git config update and rerun make setup.\n' "$git_config" >&2
+        exit 1
+    fi
+    trap 'rm -f "$lock"' EXIT
+    check_git_config
+
+    existing=
+    if [ ! -L "$git_config" ] && [ -f "$git_config" ]; then
+        existing="$git_config"
+        includes=$(git config --file "$existing" --no-includes --type=path --get-all include.path) || [ "$?" -eq 1 ]
+        if printf '%s\n' "$includes" | grep -Fxq -- "$shared_git_config"; then
+            exit 0
+        fi
+    fi
+
+    git config --file "$lock" --add include.path "$shared_git_config"
+    if [ -n "$existing" ]; then
+        printf '\n' >> "$lock"
+        cat "$existing" >> "$lock"
+    fi
+    git config --file "$lock" --no-includes --list >/dev/null
+    mv -f "$lock" "$git_config"
+    trap - EXIT
+)
+
+check_git_config
 
 for file in $dotfiles; do
     dest="$HOME/$file"
@@ -59,6 +103,7 @@ if ! vim -N -u "$repo/.vimrc" -i NONE -n -es -V1 \
     exit 1
 fi
 
+setup_git_config
 for file in $dotfiles; do
     dest="$HOME/$file"
     if [ ! -L "$dest" ]; then

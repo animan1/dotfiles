@@ -6,11 +6,16 @@ trap 'rm -rf "$sandbox"' EXIT
 export HOME="$sandbox/home with spaces"
 unset ZSH_CUSTOM
 mkdir -p "$HOME" "$sandbox/bin"
+DOTFILES_TEST_GIT=$(command -v git)
+export DOTFILES_TEST_GIT
 export PATH="$sandbox/bin:$PATH"
 
 cat >"$sandbox/bin/git" <<'EOF'
 #!/bin/sh
 set -eu
+if [ "$1" = config ]; then
+    exec "$DOTFILES_TEST_GIT" "$@"
+fi
 [ "$1 $2 $3" = 'clone --depth 1' ]
 case "$4" in
     */ohmyzsh.git) file=oh-my-zsh.sh ;;
@@ -56,6 +61,16 @@ fi
 [ ! -e "$HOME/.oh-my-zsh" ]
 rm "$HOME/.zshrc"
 
+printf '[user]\n\temail = untouched@example.com\n' >"$sandbox/foreign-config"
+ln -s "$sandbox/foreign-config" "$HOME/.gitconfig"
+if make setup >"$sandbox/output" 2>&1; then
+    printf 'Expected setup to reject a foreign Git config symlink.\n' >&2
+    exit 1
+fi
+[ "$(readlink "$HOME/.gitconfig")" = "$sandbox/foreign-config" ]
+[ ! -e "$HOME/.oh-my-zsh" ]
+rm "$HOME/.gitconfig"
+
 if FAIL_DOWNLOAD=1 make setup >"$sandbox/output" 2>&1; then
     printf 'Expected setup to fail when vim-plug could not be downloaded.\n' >&2
     exit 1
@@ -72,10 +87,46 @@ grep -Fq 'Missing Vim plugins: fixture' "$sandbox/output"
 
 make setup
 repo=$(pwd -P)
-for file in .aliases .gitconfig .tmux.conf .vimrc .zshrc; do
+for file in .aliases .tmux.conf .vimrc .zshrc; do
     [ "$(readlink "$HOME/$file")" = "$repo/$file" ]
 done
+[ ! -L "$HOME/.gitconfig" ]
+[ "$(git config --global --no-includes --get-all include.path)" = "$repo/.gitconfig" ]
+[ "$(git config --global --includes --get alias.g)" = 'grep -n' ]
 [ "$(cat "$HOME/.plug-install")" = --sync ]
+
+rm "$HOME/.gitconfig"
+ln -s "$repo/.gitconfig" "$HOME/.gitconfig"
+make setup
+[ ! -L "$HOME/.gitconfig" ]
+[ "$(git config --global --no-includes --get-all include.path)" = "$repo/.gitconfig" ]
+
+cat >"$sandbox/local-config" <<'EOF'
+# Settings specific to this machine
+[user]
+    email = local@example.com
+[alias]
+    g = status --short
+EOF
+cp "$sandbox/local-config" "$HOME/.gitconfig"
+printf 'concurrent update\n' >"$HOME/.gitconfig.lock"
+if make setup >"$sandbox/output" 2>&1; then
+    printf 'Expected setup to reject a concurrent Git config update.\n' >&2
+    exit 1
+fi
+cmp "$sandbox/local-config" "$HOME/.gitconfig"
+[ "$(cat "$HOME/.gitconfig.lock")" = 'concurrent update' ]
+rm "$HOME/.gitconfig.lock"
+
+make setup
+[ "$(git config --global --includes --get user.email)" = local@example.com ]
+[ "$(git config --global --includes --get alias.g)" = 'status --short' ]
+tail -n +4 "$HOME/.gitconfig" >"$sandbox/preserved-config"
+cmp "$sandbox/local-config" "$sandbox/preserved-config"
+git config --global user.email updated@example.com
+cp "$HOME/.gitconfig" "$sandbox/first-run-config"
 output=$(FAIL_DOWNLOAD=1 ./install.sh 2>&1)
 [ "$output" = 'Installing Vim plugins...' ]
+cmp "$HOME/.gitconfig" "$sandbox/first-run-config"
+[ "$(git config --global --includes --get user.email)" = updated@example.com ]
 zsh -n "$HOME/.zshrc"
