@@ -2,13 +2,18 @@
     name = Daniel Boeve
     email = djboeve@gmail.com
 [alias]
-    up-mast = "!git fetch origin && git checkout origin/master"
-    newb = "!git up-mast && git cpb $1"
+    up-mast = "!git fetch origin && git checkout origin/$(git main-branch)"
+    newb = "!git up-mast && git cpb"
     stash-cb = "!CURRENTBRANCH=$(git symbolic-ref HEAD 2>/dev/null | cut -d"/" -f 3)"
     g = "grep -n"
     cpb = "!git checkout -b $1 && git push --set-upstream origin"
     wip = "commit -an -m WIP"
     fp = "push origin HEAD -f"
+    uncommit = "reset HEAD~"
+    prev = "checkout HEAD~"
+    catchup = "!git fetch origin $(git main-branch):$(git main-branch) && git rebase $(git main-branch)"
+    workon = "!f() { git checkout \"$1\" && git catchup; }; f"
+    main-branch = "!git rev-parse --verify refs/heads/main >/dev/null 2>&1 && echo main || echo master"
 [core]
     editor = vim
     excludesfile = ~/.gitignore
