@@ -1,4 +1,5 @@
-PATH=$PATH:~/scripts
+# Resolve the checkout through the .zshrc symlink installed by make setup.
+path+=("$HOME/scripts" "${${(%):-%x}:A:h}/scripts")
 export NO_NPM_FEEDBACK=True
 
 source ~/.aliases
