@@ -20,3 +20,6 @@ jobs:
         run: |
           export HOME="$(mktemp -d "$RUNNER_TEMP/dotfiles.XXXXXX")"
           make setup
+          expected_script="$(pwd -P)/scripts/t-default"
+          cd "$HOME"
+          ZSH_DISABLE_COMPFIX=true zsh -ic 'test "$(command -v t-default)" = "$1"' zsh "$expected_script"
