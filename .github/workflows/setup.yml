@@ -1,0 +1,22 @@
+name: Setup
+
+on:
+  pull_request:
+  push:
+    branches: [master]
+
+permissions:
+  contents: read
+
+jobs:
+  setup:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - name: Run setup
+        run: |
+          export HOME="$(mktemp -d "$RUNNER_TEMP/dotfiles.XXXXXX")"
+          make setup

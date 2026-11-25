@@ -59,12 +59,29 @@ for file in $dotfiles; do
     fi
 done
 
-for tool in git curl vim zsh; do
+for tool in git curl; do
     if ! command -v "$tool" >/dev/null 2>&1; then
         printf 'Install %s and rerun make setup.\n' "$tool" >&2
         exit 1
     fi
 done
+
+platform=$(uname -s)
+case "$platform" in
+    Linux)
+        sudo apt-get update
+        sudo apt-get install -y vim-gtk3 yapf3 zsh
+        ;;
+    Darwin)
+        if ! command -v yapf >/dev/null 2>&1; then
+            brew install yapf
+        fi
+        ;;
+    *)
+        printf 'Setup supports Ubuntu and macOS.\n' >&2
+        exit 1
+        ;;
+esac
 
 clone_if_missing() {
     if [ ! -f "$2/$3" ]; then
@@ -110,3 +127,12 @@ for file in $dotfiles; do
         ln -s "$repo/$file" "$dest"
     fi
 done
+
+login=$(id -un)
+case "$platform" in
+    Linux) login_shell=$(getent passwd "$login" | cut -d: -f7) ;;
+    Darwin) login_shell=$(dscl . -read "/Users/$login" UserShell | awk '{print $2}') ;;
+esac
+if [ "$login_shell" != /bin/zsh ]; then
+    sudo chsh -s /bin/zsh "$login"
+fi

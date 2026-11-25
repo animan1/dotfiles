@@ -1,11 +1,9 @@
-.PHONY: help setup test
+.DEFAULT_GOAL := help
+.PHONY: help setup
 
-help:
-	@printf '%s\n' 'make setup  Link dotfiles and install Vim and Zsh plugins' \
-	              'make test   Check setup with an isolated home and offline dependencies'
+help: ## Show this help.
+	@printf 'Make targets:\n\n'; \
+	awk -F ':.*## ' '/^[a-zA-Z0-9_.-]+:.*## / {printf "    %-24s %s\n", $$1, $$2}' $(MAKEFILE_LIST)
 
-setup:
+setup: ## Install tools and plugins, link dotfiles, and set the login shell.
 	@sh ./install.sh
-
-test:
-	@sh ./tests/setup.sh
