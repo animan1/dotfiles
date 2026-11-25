@@ -1,5 +1,8 @@
-# Resolve the checkout through the .zshrc symlink installed by make setup.
-path+=("$HOME/scripts" "${${(%):-%x}:A:h}/scripts")
+# %x gives the file Zsh is reading.
+dotfiles_zshrc=${(%):-%x}
+# :A follows the setup symlink and :h takes the checkout directory.
+path+=("$HOME/scripts" "${dotfiles_zshrc:A:h}/scripts")
+unset dotfiles_zshrc
 export NO_NPM_FEEDBACK=True
 
 source ~/.aliases
